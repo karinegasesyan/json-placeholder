@@ -1,20 +1,82 @@
 import { test, expect } from "@playwright/test";
+import { request } from "node:http";
 
-test("has title", async ({ page }) => {
-  await page.goto("https://playwright.dev/");
+test.describe("JSON Placeholder API posts test", () => {
+  test("Get request for posts", async ({ request }) => {
+    const response = await request.get(
+      "https://jsonplaceholder.typicode.com/posts",
+    );
 
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
-});
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
 
-test("get started link", async ({ page }) => {
-  await page.goto("https://playwright.dev/");
+    const posts = await response.json();
 
-  // Click the get started link.
-  await page.getByRole("link", { name: "Get started" }).click();
+    expect(posts.length).toBeGreaterThan(0);
+    expect(posts.length).toBe(100);
 
-  // Expects page to have a heading with the name of Installation.
-  await expect(
-    page.getByRole("heading", { name: "Installation" }),
-  ).toBeVisible();
+    for (let post of posts) {
+      expect(post).toHaveProperty("userId");
+      expect(post).toHaveProperty("id");
+      expect(post).toHaveProperty("title");
+      expect(post).toHaveProperty("body");
+    }
+  });
+
+  test("Get request for post id 1", async ({ request }) => {
+    const response = await request.get(
+      "https://jsonplaceholder.typicode.com/posts/1",
+    );
+
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
+
+    const post = await response.json();
+    expect(post).toHaveProperty("userId");
+    expect(post).toHaveProperty("id", 1);
+    expect(post).toHaveProperty("title");
+    expect(post).toHaveProperty("body");
+  });
+
+  test("Get request comments for post id 1 - with path params", async ({
+    request,
+  }) => {
+    const response = await request.get(
+      "https://jsonplaceholder.typicode.com/posts/1/comments",
+    );
+
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
+
+    const comments = await response.json();
+
+    for (let comment of comments) {
+      expect(comment).toHaveProperty("postId", 1);
+      expect(comment).toHaveProperty("id");
+      expect(comment).toHaveProperty("name");
+      expect(comment).toHaveProperty("email");
+      expect(comment).toHaveProperty("body");
+    }
+  });
+
+  test("Get request comments for post id 1 - with query params", async ({
+    request,
+  }) => {
+    const response = await request.get(
+      "https://jsonplaceholder.typicode.com/comments?postId=1",
+    );
+
+    expect(response.ok()).toBeTruthy();
+    expect(response.status()).toBe(200);
+
+    const comments = await response.json();
+
+    for (let comment of comments) {
+      expect(comment).toHaveProperty("postId", 1);
+      expect(comment).toHaveProperty("id");
+      expect(comment).toHaveProperty("name");
+      expect(comment).toHaveProperty("email");
+      expect(comment).toHaveProperty("body");
+    }
+  });
 });
