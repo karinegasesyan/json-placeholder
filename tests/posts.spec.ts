@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
-import { request } from "node:http";
+
+const postId = 1;
 
 test.describe("JSON Placeholder API posts test", () => {
   test("Get request for posts", async ({ request }) => {
@@ -23,9 +24,9 @@ test.describe("JSON Placeholder API posts test", () => {
     }
   });
 
-  test("Get request for post id 1", async ({ request }) => {
+  test(`Get request for post id ${postId}`, async ({ request }) => {
     const response = await request.get(
-      "https://jsonplaceholder.typicode.com/posts/1",
+      `https://jsonplaceholder.typicode.com/posts/${postId}`,
     );
 
     expect(response.ok()).toBe(true);
@@ -33,16 +34,16 @@ test.describe("JSON Placeholder API posts test", () => {
 
     const post = await response.json();
     expect(post).toHaveProperty("userId");
-    expect(post).toHaveProperty("id", 1);
+    expect(post).toHaveProperty("id", postId);
     expect(post).toHaveProperty("title");
     expect(post).toHaveProperty("body");
   });
 
-  test("Get request comments for post id 1 - with path params", async ({
+  test(`Get request comments for post id ${postId} - with path params`, async ({
     request,
   }) => {
     const response = await request.get(
-      "https://jsonplaceholder.typicode.com/posts/1/comments",
+      `https://jsonplaceholder.typicode.com/posts/${postId}/comments`,
     );
 
     expect(response.ok()).toBe(true);
@@ -51,7 +52,7 @@ test.describe("JSON Placeholder API posts test", () => {
     const comments = await response.json();
 
     for (let comment of comments) {
-      expect(comment).toHaveProperty("postId", 1);
+      expect(comment).toHaveProperty("postId", postId);
       expect(comment).toHaveProperty("id");
       expect(comment).toHaveProperty("name");
       expect(comment).toHaveProperty("email");
@@ -59,11 +60,11 @@ test.describe("JSON Placeholder API posts test", () => {
     }
   });
 
-  test("Get request comments for post id 1 - with query params", async ({
+  test(`Get request comments for post id ${postId} - with query params`, async ({
     request,
   }) => {
     const response = await request.get(
-      "https://jsonplaceholder.typicode.com/comments?postId=1",
+      `https://jsonplaceholder.typicode.com/comments?postId=${postId}`,
     );
 
     expect(response.ok()).toBeTruthy();
@@ -72,7 +73,7 @@ test.describe("JSON Placeholder API posts test", () => {
     const comments = await response.json();
 
     for (let comment of comments) {
-      expect(comment).toHaveProperty("postId", 1);
+      expect(comment).toHaveProperty("postId", postId);
       expect(comment).toHaveProperty("id");
       expect(comment).toHaveProperty("name");
       expect(comment).toHaveProperty("email");
