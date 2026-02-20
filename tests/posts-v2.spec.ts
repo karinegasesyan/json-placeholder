@@ -20,7 +20,7 @@ const patchData = {
   title: "What a wonderful world!",
 };
 
-test.describe.only("JSON Placeholder API posts test", () => {
+test.describe("JSON Placeholder API posts test", () => {
   test("POST create a new Post", async ({ request }) => {
     const response = await request.post(
       "https://jsonplaceholder.typicode.com/posts",
@@ -40,7 +40,7 @@ test.describe.only("JSON Placeholder API posts test", () => {
     expect(data).toHaveProperty("body", newPost.body);
   });
 
-  test(`Get request for posts`, async ({ request }) => {
+  test(`GET request for posts`, async ({ request }) => {
     const response = await request.get(
       "https://jsonplaceholder.typicode.com/posts",
     );
@@ -62,7 +62,7 @@ test.describe.only("JSON Placeholder API posts test", () => {
   });
 
   for (let postId of postIDs) {
-    test(`Get request for post id ${postId}`, async ({ request }) => {
+    test(`GET request for post id ${postId}`, async ({ request }) => {
       const response = await request.get(
         `https://jsonplaceholder.typicode.com/posts/${postId}`,
       );
@@ -79,7 +79,7 @@ test.describe.only("JSON Placeholder API posts test", () => {
   }
 
   for (let postId of postIDs) {
-    test(`Get request comments for post id ${postId} - with path params`, async ({
+    test(`GET request comments for post id ${postId} - with path params`, async ({
       request,
     }) => {
       const response = await request.get(
@@ -101,7 +101,7 @@ test.describe.only("JSON Placeholder API posts test", () => {
     });
   }
   for (let postId of postIDs) {
-    test(`Get request comments for post id ${postId} - with query params`, async ({
+    test(`GET request comments for post id ${postId} - with query params`, async ({
       request,
     }) => {
       const response = await request.get(
@@ -123,7 +123,7 @@ test.describe.only("JSON Placeholder API posts test", () => {
     });
   }
 
-  test(`PUT update update postID ${postId}`, async ({ request }) => {
+  test(`PUT update postID ${postId}`, async ({ request }) => {
     const response = await request.put(
       `https://jsonplaceholder.typicode.com/posts/${postId}`,
       { data: updatedData },
