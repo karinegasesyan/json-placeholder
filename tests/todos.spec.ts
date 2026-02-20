@@ -39,6 +39,7 @@ test.describe("JSON Placeholder Todos API", () => {
     const response = await request.get(
       "https://jsonplaceholder.typicode.com/todos/9999",
     );
+    expect(response.ok()).toBe(false);
     expect(response.status()).toBe(404);
     const body = await response.json();
     expect(body).toEqual({});

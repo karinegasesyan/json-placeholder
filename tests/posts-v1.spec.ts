@@ -1,9 +1,44 @@
 import { test, expect } from "@playwright/test";
+import { request } from "node:http";
+import { title } from "node:process";
 
-const postId = 1;
+const postId: number = 1;
+const newPost = {
+  userId: 1,
+  title: "What is Lorem Ipsum?",
+  body: "Lorem Ipsum is simply dummy text of the printing and typesetting industry",
+};
+const updatedData = {
+  userId: 1,
+  title: "loarem ipsum",
+  body: "solo ipsum",
+};
+
+const patchData = {
+  title: "What a wonderful world!",
+};
 
 test.describe("JSON Placeholder API posts test", () => {
-  test("Get request for posts", async ({ request }) => {
+  test("POST create a new Post", async ({ request }) => {
+    const response = await request.post(
+      "https://jsonplaceholder.typicode.com/posts",
+      {
+        data: newPost,
+      },
+    );
+
+    expect(response.ok()).toBeTruthy();
+    expect(response.status()).toBe(201);
+
+    const data = await response.json();
+
+    expect(data).toHaveProperty("id");
+    expect(data).toHaveProperty("userId", newPost.userId);
+    expect(data).toHaveProperty("title", newPost.title);
+    expect(data).toHaveProperty("body", newPost.body);
+  });
+
+  test(`Get request for posts`, async ({ request }) => {
     const response = await request.get(
       "https://jsonplaceholder.typicode.com/posts",
     );
@@ -79,5 +114,47 @@ test.describe("JSON Placeholder API posts test", () => {
       expect(comment).toHaveProperty("email");
       expect(comment).toHaveProperty("body");
     }
+  });
+
+  test(`PUT update update postID ${postId}`, async ({ request }) => {
+    const response = await request.put(
+      `https://jsonplaceholder.typicode.com/posts/${postId}`,
+      { data: updatedData },
+    );
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
+
+    const data = await response.json();
+    expect(data).toHaveProperty("userId", updatedData.userId);
+    expect(data).toHaveProperty("id", postId);
+    expect(data).toHaveProperty("body", updatedData.body);
+    expect(data).toHaveProperty("title", updatedData.title);
+  });
+
+  test(`PATCH partial update postId ${postId}`, async ({ request }) => {
+    const response = await request.patch(
+      `https://jsonplaceholder.typicode.com/posts/${postId}`,
+      {
+        data: patchData,
+      },
+    );
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
+
+    const data = await response.json();
+
+    expect(data).toHaveProperty("id", postId);
+    expect(data).toHaveProperty("title", patchData.title);
+  });
+
+  test.only(`Delete post postId ${postId}`, async ({ request }) => {
+    const response = await request.delete(
+      `https://jsonplaceholder.typicode.com/posts/${postId}`,
+    );
+    expect(response.ok()).toBe(true);
+    expect(response.status()).toBe(200);
+
+    const data = await response.json();
+    expect(data).toEqual({});
   });
 });
